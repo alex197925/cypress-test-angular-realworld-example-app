@@ -4,20 +4,23 @@ describe("Signup & Login", () => {
   let randomString = Math.random().toString(36).substring(7);
   let userName = "Auto" + randomString;
   let email = "Auto_email" + randomString + "@gmail.com";
+  let password = "Password1";
+
+  beforeEach(function () {
+    cy.navigateTo_Localhost_Homepage();
+  });
 
   it("Test Valid signup", () => {
     cy.intercept("POST", "**/*.realworld.io/api/users").as("newUser");
 
-    cy.visit("http://localhost:4200/");
+    cy.navigateTo_Localhost_Homepage();
 
     cy.get(".nav").contains("Sign up").click();
     cy.get("[placeholder='Username']").type(userName);
 
     cy.get("[placeholder='Email']").type(email);
 
-    cy.get("[placeholder='Password']").type("Password1", {
-      force: true,
-    });
+    cy.get("[placeholder='Password']").type(password);
     cy.get("button").contains("Sign up").click();
 
     cy.wait("@newUser", {}).then(({ request, response }) => {
@@ -29,5 +32,17 @@ describe("Signup & Login", () => {
       expect(request.body.user.username).to.eq(userName);
       expect(request.body.user.email).to.eq(email);
     });
+  });
+
+  it("Test ValidLogin", () => {
+    // cy.visit("http://localhost:4200/");
+    cy.get(".nav").contains("Sign in").click();
+
+    cy.get("[placeholder='Email']").type(email);
+    cy.get("[placeholder='Password']").type(password);
+
+    cy.get("[type='submit']").click();
+
+    cy.get(":nth-child(4) > .nav-link").contains(userName);
   });
 });
