@@ -34,15 +34,19 @@ describe("Signup & Login", () => {
     });
   });
 
-  it("Test ValidLogin", () => {
+  it("Test ValidLogin & mock Popular Tags", () => {
     // cy.visit("http://localhost:4200/");
+    cy.intercept("GET", "**/tags", { fixture: "popularTags.json" });
     cy.get(".nav").contains("Sign in").click();
-
     cy.get("[placeholder='Email']").type(email);
     cy.get("[placeholder='Password']").type(password);
-
     cy.get("[type='submit']").click();
-
     cy.get(":nth-child(4) > .nav-link").contains(userName);
+
+    // cy.get(".tag-list").contains("JavaScript");
+    // cy.get(".tag-list").contains("cypress");
+    cy.get(".tag-list")
+      .should("contain", "cypress")
+      .and("contain", "JavaScript ");
   });
 });
