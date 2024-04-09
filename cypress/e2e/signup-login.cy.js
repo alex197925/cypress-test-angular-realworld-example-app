@@ -11,6 +11,7 @@ describe("Signup & Login", () => {
   });
 
   it("Test Valid signup", () => {
+    //cy.visit("http://localhost:4200/");
     cy.intercept("POST", "**/*.realworld.io/api/users").as("newUser");
 
     cy.navigateTo_Localhost_Homepage();
@@ -35,7 +36,7 @@ describe("Signup & Login", () => {
   });
 
   it("Test ValidLogin & mock Popular Tags", () => {
-    // cy.visit("http://localhost:4200/");
+    //cy.visit("http://localhost:4200/");
     cy.intercept("GET", "**/tags", { fixture: "popularTags.json" });
     cy.get(".nav").contains("Sign in").click();
     cy.get("[placeholder='Email']").type(email);
@@ -48,5 +49,19 @@ describe("Signup & Login", () => {
     cy.get(".tag-list")
       .should("contain", "cypress")
       .and("contain", "JavaScript ");
+  });
+
+  it.only("Mock global feed data", () => {
+    cy.intercept("GET", "**/api/articles*", { fixture: "newArticle.json" }).as(
+      "articles"
+    );
+
+    cy.get(".nav").contains("Sign up").click();
+    cy.get("[placeholder='Username']").type(userName);
+    cy.get("[placeholder='Email']").type(email);
+    cy.get("[placeholder='Password']").type(password);
+    cy.get("button").contains("Sign up").click();
+
+    cy.wait("@articles");
   });
 });
